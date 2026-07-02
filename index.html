@@ -1,0 +1,2259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Claude Science 全网讨论观察页</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232f7b57'/%3E%3Cpath d='M8 20c4-8 12-8 16 0M10 12h12' stroke='%23f6f7f2' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #edf2ee;
+      --ink: #121914;
+      --muted: #58635c;
+      --surface: #fbfcf8;
+      --surface-2: #e4ece5;
+      --panel: #f4f7f2;
+      --line: #cbd7cc;
+      --accent: #2f7b57;
+      --accent-2: #b95f35;
+      --accent-3: #287d86;
+      --warning: #aa741d;
+      --danger: #a24440;
+      --success: #2f7b57;
+      --shadow: 0 1px 2px rgba(18, 25, 20, 0.08);
+      --shadow-lift: 0 10px 24px rgba(18, 25, 20, 0.08);
+      --radius: 8px;
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      --text-xs: 12px;
+      --text-sm: 14px;
+      --text-md: 16px;
+      --text-lg: 20px;
+      --text-xl: 28px;
+      --text-2xl: 44px;
+      --lh-tight: 1.08;
+      --lh-body: 1.62;
+      --dur-1: 160ms;
+      --dur-2: 260ms;
+      --ease-out: cubic-bezier(.2, .9, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      color: var(--ink);
+      background: var(--bg);
+      font-family: var(--font-sans);
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        linear-gradient(180deg, #e7eee8 0%, #f4f7f2 42%, #edf2ee 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid rgba(36, 121, 133, 0.58);
+      outline-offset: 3px;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .page {
+      min-height: 100vh;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 74vh;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      color: #fbfff6;
+      background: #11140f;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(8, 13, 9, 0.94) 0%, rgba(10, 16, 11, 0.7) 48%, rgba(10, 16, 11, 0.2) 100%),
+        linear-gradient(0deg, rgba(8, 13, 9, 0.9) 0%, rgba(8, 13, 9, 0.16) 58%),
+        url("https://cdn.prod.website-files.com/6889473510b50328dbb70ae6/6a43a5d70ebe75212a0ec830_science-pillars-1.webp") center right / cover no-repeat;
+      filter: saturate(0.92) contrast(1.02);
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(133, 214, 155, 0.72), transparent);
+    }
+
+    .hero-inner {
+      position: relative;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 86px 0 42px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 18px;
+      color: #d9f5df;
+      font-size: var(--text-sm);
+      font-weight: 700;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 34px;
+      height: 2px;
+      background: #85d69b;
+    }
+
+    h1 {
+      max-width: 860px;
+      margin: 0;
+      font-size: var(--text-2xl);
+      line-height: var(--lh-tight);
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 20px 0 28px;
+      color: #e5eadf;
+      font-size: var(--text-lg);
+      line-height: 1.55;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      margin-top: 34px;
+    }
+
+    .metric {
+      min-height: 108px;
+      padding: 17px;
+      border: 1px solid rgba(224, 244, 219, 0.18);
+      border-radius: var(--radius);
+      background: rgba(10, 17, 12, 0.72);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+    }
+
+    .metric:hover {
+      transform: translateY(-2px);
+      border-color: rgba(133, 214, 155, 0.44);
+      background: rgba(13, 24, 16, 0.86);
+    }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .metric span {
+      color: #d9dfd4;
+      font-size: var(--text-sm);
+      line-height: 1.45;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 40px 0 76px;
+    }
+
+    .section {
+      margin-top: 58px;
+      scroll-margin-top: 24px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: var(--text-xl);
+      line-height: 1.15;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .section-note {
+      max-width: 520px;
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .insight-strip {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 14px;
+      margin-top: -28px;
+      align-items: stretch;
+    }
+
+    .verdict {
+      position: relative;
+      overflow: hidden;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(47, 123, 87, 0.08), transparent 46%),
+        var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .verdict h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .verdict p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .coverage {
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .coverage h2 {
+      margin: 0 0 14px;
+      font-size: 20px;
+    }
+
+    .coverage-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.45;
+    }
+
+    .coverage-list strong {
+      color: var(--ink);
+    }
+
+    .function-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .function-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 284px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 52%),
+        var(--surface);
+      box-shadow: var(--shadow);
+      transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+    }
+
+    .function-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 123, 87, 0.38);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .function-card h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      line-height: 1.25;
+    }
+
+    .function-card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .task-list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      margin-top: auto;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.45;
+    }
+
+    .task-list li {
+      position: relative;
+      padding-left: 16px;
+    }
+
+    .task-list li::before {
+      content: "";
+      position: absolute;
+      top: 0.62em;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .theme-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 20px;
+    }
+
+    .theme-button {
+      min-height: 40px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--ink);
+      background: var(--surface);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out);
+    }
+
+    .theme-button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(47, 123, 87, 0.48);
+    }
+
+    .theme-button.is-active {
+      color: #fafff5;
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .theme-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 256px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+    }
+
+    .theme-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(40, 125, 134, 0.32);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .theme-card.is-hidden {
+      display: none;
+    }
+
+    .theme-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .theme-card h3 {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.25;
+    }
+
+    .tone {
+      flex: 0 0 auto;
+      padding: 5px 8px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--accent-3);
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .tone.warn {
+      background: var(--warning);
+    }
+
+    .tone.risk {
+      background: var(--danger);
+    }
+
+    .tone.good {
+      background: var(--success);
+    }
+
+    .theme-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .evidence {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 9px;
+      border: 1px solid rgba(18, 25, 20, 0.04);
+      border-radius: 7px;
+      color: #334033;
+      background: var(--surface-2);
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .voice-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 16px;
+    }
+
+    .heatmap,
+    .voice-list,
+    .source-table,
+    .timeline,
+    .actions {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .heatmap {
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(40, 125, 134, 0.06), transparent 50%),
+        var(--surface);
+    }
+
+    .signal-panel {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .signal-panel h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .signal-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .signal-item {
+      display: grid;
+      gap: 5px;
+      padding: 12px 13px;
+      border: 1px solid rgba(203, 215, 204, 0.72);
+      border-radius: 8px;
+      background: rgba(251, 252, 248, 0.72);
+    }
+
+    .signal-item strong {
+      font-size: var(--text-sm);
+    }
+
+    .signal-item span {
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.45;
+    }
+
+    .signal-note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .heat-row {
+      display: grid;
+      grid-template-columns: 138px 1fr 42px;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0;
+      font-size: var(--text-sm);
+    }
+
+    .bar {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dbe4dc;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-3));
+    }
+
+    .voice-list {
+      display: grid;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .voice {
+      display: grid;
+      gap: 8px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      transition: background var(--dur-1) var(--ease-out);
+    }
+
+    .voice:hover {
+      background: #f5f8f3;
+    }
+
+    .voice:last-child {
+      border-bottom: 0;
+    }
+
+    .voice h3 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .voice p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .voice-meta {
+      color: var(--accent-3);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+    }
+
+    .sample-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .workflow-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+      gap: 18px;
+      margin-bottom: 18px;
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(47, 123, 87, 0.08), rgba(40, 125, 134, 0.06)),
+        var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .workflow-copy {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .workflow-copy h3 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .workflow-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .workflow-step {
+      min-height: 128px;
+      padding: 14px;
+      border: 1px solid rgba(203, 215, 204, 0.82);
+      border-radius: 8px;
+      background: rgba(251, 252, 248, 0.8);
+    }
+
+    .workflow-step strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+    }
+
+    .workflow-step h4 {
+      margin: 0 0 8px;
+      font-size: var(--text-md);
+      line-height: 1.25;
+    }
+
+    .workflow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.45;
+    }
+
+    .feature-gallery {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 2px 2px 14px;
+      scroll-snap-type: x mandatory;
+      scrollbar-color: rgba(47, 123, 87, 0.32) transparent;
+    }
+
+    .feature-card {
+      flex: 0 0 min(540px, 88vw);
+      scroll-snap-align: start;
+    }
+
+    .feature-card.is-group {
+      min-height: 430px;
+      cursor: pointer;
+    }
+
+    .workflow-shot-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+      gap: 18px;
+      min-height: 0;
+      padding: 18px;
+      cursor: pointer;
+    }
+
+    .workflow-shot-card .sample-shot {
+      height: min(440px, 52vw);
+      min-height: 300px;
+      margin: 0;
+    }
+
+    .workflow-shot-copy {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .workflow-shot-copy h3 {
+      margin: 4px 0 4px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .workflow-shot-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .workflow-shot-steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .workflow-shot-steps span {
+      min-height: 34px;
+      padding: 8px 10px;
+      border: 1px solid rgba(47, 123, 87, 0.16);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(47, 123, 87, 0.05);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .feature-card.is-group .sample-shot {
+      margin-bottom: 12px;
+    }
+
+    .preview-thumbs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview-thumbs img,
+    .preview-thumbs .shot-mock {
+      width: 100%;
+      height: 72px;
+      margin: 0;
+      object-fit: cover;
+      border: 1px solid rgba(203, 215, 204, 0.82);
+      border-radius: 7px;
+      background: #eef4ee;
+    }
+
+    .preview-thumbs .shot-mock {
+      height: 72px;
+      padding: 8px;
+    }
+
+    .open-hint {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 32px;
+      margin-top: 14px;
+      padding: 0 10px;
+      border: 1px solid rgba(47, 123, 87, 0.22);
+      border-radius: 7px;
+      color: var(--accent);
+      background: rgba(47, 123, 87, 0.06);
+      font-size: var(--text-xs);
+      font-weight: 800;
+    }
+
+    .source-samples {
+      margin-top: 22px;
+    }
+
+    .source-samples h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .source-samples > p {
+      max-width: 720px;
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .compact-sources .sample-card {
+      min-height: 300px;
+    }
+
+    .compact-sources .sample-shot {
+      height: 132px;
+    }
+
+    .screenshot-index {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .screenshot-index li {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid rgba(47, 123, 87, 0.18);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(251, 252, 248, 0.72);
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .screenshot-index strong {
+      color: var(--accent);
+      font-family: var(--font-mono);
+    }
+
+    .sample-card,
+    .topic-card,
+    .trend-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      transition: transform var(--dur-1) var(--ease-out), box-shadow var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+    }
+
+    .sample-card:hover,
+    .topic-card:hover,
+    .trend-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(47, 123, 87, 0.36);
+      box-shadow: var(--shadow-lift);
+    }
+
+    .sample-card {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr auto;
+      min-height: 360px;
+      padding: 16px;
+    }
+
+    .sample-shot {
+      position: relative;
+      display: grid;
+      place-items: center;
+      height: 182px;
+      margin: 12px 0 14px;
+      overflow: hidden;
+      border: 1px solid rgba(203, 215, 204, 0.82);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(47, 123, 87, 0.12), rgba(40, 125, 134, 0.12)),
+        #eef4ee;
+    }
+
+    .feature-card .sample-shot {
+      height: 310px;
+    }
+
+    .sample-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .sample-shot::after {
+      content: attr(data-caption);
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      max-width: calc(100% - 20px);
+      padding: 5px 8px;
+      border-radius: 6px;
+      color: #fafff5;
+      background: rgba(18, 25, 20, 0.68);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .shot-expand {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+    }
+
+    .shot-expand:focus-visible {
+      outline: 3px solid rgba(47, 123, 87, 0.68);
+      outline-offset: -6px;
+    }
+
+    .shot-mock {
+      width: calc(100% - 28px);
+      height: calc(100% - 24px);
+      padding: 12px;
+      border: 1px solid rgba(47, 123, 87, 0.18);
+      border-radius: 8px;
+      background: rgba(251, 252, 248, 0.82);
+      box-shadow: 0 14px 28px rgba(18, 25, 20, 0.08);
+    }
+
+    .shot-line {
+      display: block;
+      height: 10px;
+      margin: 9px 0;
+      border-radius: 999px;
+      background: rgba(47, 123, 87, 0.2);
+    }
+
+    .shot-line:nth-child(1) {
+      width: 62%;
+      background: rgba(47, 123, 87, 0.5);
+    }
+
+    .shot-line:nth-child(2) {
+      width: 84%;
+    }
+
+    .shot-line:nth-child(3) {
+      width: 72%;
+    }
+
+    .shot-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .shot-grid span {
+      height: 32px;
+      border-radius: 7px;
+      background: rgba(40, 125, 134, 0.18);
+    }
+
+    .sample-label,
+    .topic-label {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 7px;
+      color: #fafff5;
+      background: var(--accent);
+      font-size: var(--text-xs);
+      font-weight: 800;
+    }
+
+    .sample-label.is-pending {
+      color: #2f2717;
+      background: rgba(217, 146, 54, 0.18);
+      border: 1px solid rgba(217, 146, 54, 0.28);
+    }
+
+    .sample-card h3,
+    .topic-card h3,
+    .trend-card h3 {
+      margin: 12px 0 10px;
+      font-size: 19px;
+      line-height: 1.28;
+    }
+
+    .sample-card p,
+    .topic-card p,
+    .trend-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    .sample-meta {
+      margin-top: 14px;
+      color: var(--accent-3);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      line-height: 1.45;
+    }
+
+    .link-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .link-cluster a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid rgba(47, 123, 87, 0.22);
+      border-radius: 7px;
+      color: var(--accent);
+      background: rgba(47, 123, 87, 0.06);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      text-decoration: none;
+      transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out);
+    }
+
+    .link-cluster a:hover {
+      transform: translateY(-1px);
+      border-color: rgba(47, 123, 87, 0.48);
+      background: rgba(47, 123, 87, 0.12);
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 26px;
+      background: rgba(18, 25, 20, 0.82);
+    }
+
+    .lightbox.is-open {
+      display: grid;
+    }
+
+    .lightbox-panel {
+      width: min(1180px, 100%);
+      max-height: min(88vh, 860px);
+      overflow: hidden;
+      border: 1px solid rgba(224, 244, 219, 0.24);
+      border-radius: var(--radius);
+      background: #f7faf5;
+      box-shadow: 0 26px 90px rgba(0, 0, 0, 0.45);
+    }
+
+    .lightbox-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 14px;
+      color: var(--ink);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .lightbox-title {
+      margin: 0;
+      font-size: var(--text-sm);
+      line-height: 1.35;
+    }
+
+    .lightbox-close {
+      min-width: 36px;
+      min-height: 36px;
+      border: 1px solid rgba(47, 123, 87, 0.2);
+      border-radius: 8px;
+      color: var(--ink);
+      background: rgba(47, 123, 87, 0.06);
+      cursor: pointer;
+    }
+
+    .lightbox-scroll {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 18px;
+      max-height: calc(88vh - 62px);
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .lightbox-summary {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .lightbox-summary h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .lightbox-summary p,
+    .lightbox-summary li {
+      color: var(--muted);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .lightbox-summary p {
+      margin: 0 0 12px;
+    }
+
+    .lightbox-summary ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .lightbox-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .lightbox-shot {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .lightbox-shot.is-clickable {
+      cursor: pointer;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+    }
+
+    .lightbox-shot.is-clickable:hover,
+    .lightbox-shot.is-clickable:focus-visible {
+      border-color: rgba(47, 123, 87, 0.42);
+      box-shadow: 0 18px 38px rgba(35, 49, 40, 0.16);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .lightbox-shot img {
+      display: block;
+      width: 100%;
+      max-height: 620px;
+      object-fit: contain;
+      background: #eef4ee;
+    }
+
+    .lightbox-shot figcaption {
+      padding: 14px 16px 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .lightbox-shot h4 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.3;
+    }
+
+    .lightbox-shot p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .modal-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .modal-links a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 0 9px;
+      border: 1px solid rgba(47, 123, 87, 0.22);
+      border-radius: 7px;
+      color: var(--accent);
+      background: rgba(47, 123, 87, 0.06);
+      font-size: var(--text-xs);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .topic-layout {
+      display: grid;
+      gap: 16px;
+    }
+
+    .trend-card {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+      gap: 18px;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .trend-copy {
+      display: grid;
+      align-content: center;
+      gap: 10px;
+    }
+
+    .trend-copy h3 {
+      margin-top: 0;
+    }
+
+    .trend-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .legend-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 9px;
+      border: 1px solid rgba(203, 215, 204, 0.72);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(251, 252, 248, 0.78);
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+
+    .legend-dot::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--dot, var(--accent));
+    }
+
+    .trend-svg {
+      width: 100%;
+      min-height: 250px;
+    }
+
+    .trend-axis {
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .topic-card {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto auto;
+      min-height: 318px;
+      padding: 18px;
+    }
+
+    .topic-card header {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topic-card h3 {
+      margin-top: 0;
+    }
+
+    .topic-label.is-risk {
+      background: var(--danger);
+    }
+
+    .topic-label.is-good {
+      background: var(--success);
+    }
+
+    .topic-label.is-warn {
+      background: var(--warning);
+    }
+
+    .topic-heat {
+      display: grid;
+      grid-template-columns: 66px 1fr 42px;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0 14px;
+      color: var(--muted);
+      font-size: var(--text-xs);
+      font-weight: 800;
+    }
+
+    .mini-bar {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dbe4dc;
+    }
+
+    .mini-bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-3));
+    }
+
+    .topic-voice {
+      margin-top: 14px;
+      padding: 12px 13px;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      color: var(--muted);
+      background: rgba(47, 123, 87, 0.06);
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+
+    .topic-voice strong {
+      color: var(--ink);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      transition: background var(--dur-1) var(--ease-out);
+    }
+
+    .timeline-item:nth-child(even) {
+      background: #f7f9f5;
+    }
+
+    .timeline-item:hover {
+      background: #eef4ee;
+    }
+
+    .timeline-item:last-child {
+      border-bottom: 0;
+    }
+
+    .timeline-date {
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .timeline-item h3 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .source-table {
+      overflow: hidden;
+    }
+
+    .source-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 110px;
+      gap: 16px;
+      align-items: center;
+      padding: 15px 18px;
+      border-bottom: 1px solid var(--line);
+      font-size: var(--text-sm);
+      transition: background var(--dur-1) var(--ease-out);
+    }
+
+    .source-row:hover {
+      background: #f5f8f3;
+    }
+
+    .source-row:last-child {
+      border-bottom: 0;
+    }
+
+    .source-row strong {
+      font-size: var(--text-md);
+    }
+
+    .source-row span {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .source-row a {
+      justify-self: end;
+      color: var(--accent);
+      padding: 7px 10px;
+      border: 1px solid rgba(47, 123, 87, 0.22);
+      border-radius: 7px;
+      background: rgba(47, 123, 87, 0.06);
+      font-weight: 700;
+      text-decoration: none;
+      transition: border-color var(--dur-1) var(--ease-out), background var(--dur-1) var(--ease-out), transform var(--dur-1) var(--ease-out);
+    }
+
+    .source-row a:hover {
+      transform: translateY(-1px);
+      border-color: rgba(47, 123, 87, 0.48);
+      background: rgba(47, 123, 87, 0.12);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      overflow: hidden;
+    }
+
+    .action {
+      min-height: 196px;
+      padding: 20px;
+      background: var(--surface);
+      transition: background var(--dur-1) var(--ease-out);
+    }
+
+    .action:hover {
+      background: #f5f8f3;
+    }
+
+    .action h3 {
+      margin: 0 0 10px;
+      font-size: 19px;
+    }
+
+    .action p {
+      margin: 0;
+      color: var(--muted);
+      line-height: var(--lh-body);
+    }
+
+    @media (max-width: 900px) {
+	      .hero-grid,
+	      .function-grid,
+	      .sample-grid,
+	      .theme-grid,
+	      .topic-grid,
+	      .actions {
+	        grid-template-columns: repeat(2, minmax(0, 1fr));
+	      }
+
+	      .insight-strip,
+	      .voice-layout,
+	      .trend-card,
+	      .workflow-panel,
+	      .workflow-shot-card {
+	        grid-template-columns: 1fr;
+	      }
+
+      .workflow-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .source-row,
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+
+      .source-row a {
+        justify-self: start;
+      }
+
+    }
+
+    @media (max-width: 620px) {
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-inner {
+        width: min(100% - 28px, 1180px);
+        padding-top: 72px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .hero-copy {
+        font-size: 18px;
+      }
+
+      main {
+        width: min(100% - 28px, 1180px);
+      }
+
+	      .hero-grid,
+	      .function-grid,
+	      .sample-grid,
+	      .theme-grid,
+	      .topic-grid,
+	      .actions {
+	        grid-template-columns: 1fr;
+	      }
+
+      .workflow-panel {
+        padding: 16px;
+      }
+
+      .workflow-shot-card {
+        padding: 14px;
+      }
+
+      .workflow-shot-card .sample-shot {
+        height: 240px;
+        min-height: 220px;
+      }
+
+      .workflow-shot-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card {
+        flex-basis: min(320px, 88vw);
+      }
+
+      .lightbox-scroll {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+
+      .lightbox-summary {
+        position: static;
+      }
+
+      .lightbox {
+        padding: 14px;
+      }
+
+      .section-head {
+        display: grid;
+      }
+
+      .heat-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .action {
+        min-height: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Claude Science 讨论雷达 · 2026-07-01 采集快照</p>
+        <h1>讨论焦点不是“新模型”，而是 Anthropic 能不能把 Claude 变成科研团队每天打开的工作台。</h1>
+        <p class="hero-copy">本页汇总官方发布、Hacker News（HN）主讨论、英文科技媒体、中文公开报道、Reddit 公开讨论与小红书登录后搜索样本。X 仍待官方 API 或普通账号内搜索补充。</p>
+        <div class="hero-grid" aria-label="采集概览">
+          <div class="metric"><strong>452</strong><span>HN 主帖 points，当前最强社区讨论样本。</span></div>
+          <div class="metric"><strong>134</strong><span>HN 主帖评论数，围绕科研诚信、HPC、产品边界展开。</span></div>
+          <div class="metric"><strong>20</strong><span>小红书搜索样本，新增教程、Windows/WSL、操作实例和深度解读。</span></div>
+          <div class="metric"><strong>20</strong><span>B站搜索样本，确认中文视频速览、实测和功能演示素材。</span></div>
+          <div class="metric"><strong>16</strong><span>Reddit 平台内搜索命中，补充社区声量和专业子版块反馈。</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="insight-strip" aria-label="核心判断">
+        <article class="verdict">
+          <h2>一句话判断</h2>
+          <p>Claude Science 的外部讨论没有围着模型分数打转，更多是在看它能不能变成科研团队真正会用的工作台。支持者看重可追溯 artifact、HPC/数据库连接和科研减负；质疑者集中在幻觉、论文垃圾化、生命科学安全边界和闭源平台锁定。</p>
+        </article>
+        <aside class="coverage">
+          <h2>本轮覆盖边界</h2>
+          <ul class="coverage-list">
+            <li><strong>已覆盖：</strong>官方页、HN Algolia、Jina Reader、英文/中文公开网页与公众号、Reddit 公开搜索、小红书登录后搜索样本、B站视频搜索与重点视频详情。</li>
+            <li><strong>弱覆盖：</strong>X 公开索引只返回外围结果，平台内搜索或官方 API 待补；YouTube 登录态仍遇到 429/bot 校验，只保留从 B站转载视频反查到的原视频入口。</li>
+            <li><strong>待补：</strong>小红书评论已抽取少量样本，仍待更多深翻；另需补截图真图授权/替换、视频字幕/OCR、YouTube 稳定搜索结果，以及 X 平台内高互动帖与长讨论。</li>
+          </ul>
+        </aside>
+      </section>
+
+      <section class="section" aria-labelledby="functions-title">
+        <div class="section-head">
+          <div>
+            <h2 id="functions-title">主要功能与科学任务</h2>
+          </div>
+          <p class="section-note">基于 Anthropic 官方发布和 Claude Science 产品页整理，重点区分“工作台能力”和“已展示科学任务”。</p>
+        </div>
+        <div class="function-grid">
+          <article class="function-card">
+            <h3>统一科研工作台</h3>
+            <p>把 PubMed、Jupyter、R、集群终端等碎片化工具放到一个环境里，让 Claude 参与文献分析、多步骤研究、图表和手稿迭代。</p>
+            <ul class="task-list">
+              <li>文献综述与假设生成</li>
+              <li>研究计划拆解和多步骤执行</li>
+              <li>图表、方法、手稿的反复修改</li>
+            </ul>
+          </article>
+          <article class="function-card">
+            <h3>可追溯 artifact</h3>
+            <p>官方强调代码、运行环境、消息历史和图表输出可以绑定保留，让研究者回头复盘结果怎么来的，而不是只拿到一段结论。</p>
+            <ul class="task-list">
+              <li>3D 蛋白结构与分子视图</li>
+              <li>Genome browser tracks</li>
+              <li>图表、代码和手稿联动复核</li>
+            </ul>
+          </article>
+          <article class="function-card">
+            <h3>计算与数据管线</h3>
+            <p>支持本机、SSH/HPC 和 Modal 等计算环境；敏感数据可以留在本地、实验室或药企的受控环境里，Claude 负责规划、生成命令和发起任务。</p>
+            <ul class="task-list">
+              <li>蛋白折叠与结构预测任务</li>
+              <li>基因组/转录组分析流程</li>
+              <li>从单 GPU 扩展到集群计算</li>
+            </ul>
+          </article>
+          <article class="function-card">
+            <h3>领域 connector 与数据库</h3>
+            <p>官方宣称包含 60 多个 skills/connectors，覆盖基因组学、单细胞、蛋白质组、结构生物学和化学信息学等方向。</p>
+            <ul class="task-list">
+              <li>UniProt、PDB、Ensembl、Reactome</li>
+              <li>ClinVar、ChEMBL、GEO</li>
+              <li>NVIDIA BioNeMo、Evo 2、Boltz-2、OpenFold3</li>
+            </ul>
+          </article>
+          <article class="function-card">
+            <h3>Reviewer agent 与质量控制</h3>
+            <p>内置 reviewer agent 会检查引用、数字、图表与代码是否一致，也可以 fork 会话做独立复核，回应社区最担心的可信问题。</p>
+            <ul class="task-list">
+              <li>引用和数字溯源检查</li>
+              <li>图表与代码一致性审查</li>
+              <li>结果复现与自我修正</li>
+            </ul>
+          </article>
+          <article class="function-card">
+            <h3>已展示的科学任务</h3>
+            <p>当前案例明显偏生命科学，但任务跨度已经从数据分析延伸到实验设计、结构预测、药物发现和疾病研究工作流。</p>
+            <ul class="task-list">
+              <li>single-cell RNA-seq 分析</li>
+              <li>CRISPR screen design</li>
+              <li>protein structure prediction 与 cheminformatics</li>
+            </ul>
+          </article>
+        </div>
+	      </section>
+
+	      <section class="section" aria-labelledby="feature-shots-title">
+	        <div class="section-head">
+	          <div>
+	            <h2 id="feature-shots-title">Claude Science 工作流截图</h2>
+	          </div>
+	          <p class="section-note">从研究任务输入、远程计算、Reviewer 复核，到 artifact 输出和中文教程/实测来源，串起 Claude Science 的完整工作台形态。</p>
+	        </div>
+	        <article class="sample-card workflow-shot-card">
+	          <div class="sample-shot" data-caption="官方产品图 / 工作台主流程">
+	            <img src="assets/science-pillars-domain.webp" alt="Claude Science 工作流截图入口" loading="lazy">
+	            <button class="shot-expand" type="button" aria-label="查看 Claude Science 工作流截图流程" data-gallery="scienceFlow"></button>
+	          </div>
+	          <div class="workflow-shot-copy">
+	            <span class="sample-label">截图流程</span>
+	            <h3>从研究任务到可复盘 artifact，界面到底长什么样</h3>
+	            <p>这组截图串联官方产品界面、输出样例、B站实测和中文上手来源，用来观察 Claude Science 如何把科研任务组织成可复盘工作流。</p>
+	            <div class="workflow-shot-steps" aria-label="截图流程">
+	              <span>01 任务输入 / Reviewer / PDF</span>
+	              <span>02 远程任务 / Notebook</span>
+	              <span>03 Artifact / Code / Review</span>
+	              <span>04 图表 / 蛋白 / 化学编辑器</span>
+	              <span>05 B站实测 / 速览</span>
+	              <span>06 小红书上手评论信号</span>
+	            </div>
+	            <span class="sample-meta">9 个截图/信号 · 官方产品图 / 输出样例 / B站 / 小红书评论</span>
+	            <span class="open-hint">浏览完整流程</span>
+	          </div>
+	        </article>
+	      </section>
+
+	      <section class="section" aria-labelledby="layout-title">
+	        <div class="section-head">
+	          <div>
+            <h2 id="layout-title">Claude 在 Science 的布局时间线</h2>
+          </div>
+          <p class="section-note">这条线索显示 Anthropic 不是突然做了一个“科研版 Claude”，而是先铺生命科学 connector、skills 和资助，再推出独立工作台。</p>
+        </div>
+        <div class="timeline">
+          <article class="timeline-item">
+            <span class="timeline-date">2025-10-20</span>
+            <div><h3>Claude for Life Sciences：从单点助手转向生命科学套件</h3><p>Anthropic 发布生命科学方向能力，重点包括 Sonnet 4.5 的专业任务表现、Benchling/BioRender/PubMed/Wiley/Synapse/10x 等 connector、Agent Skills、prompt library 和专属支持。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2025 Q4 - 2026 H1</span>
+            <div><h3>生态和方法论铺垫：AI for Science 与伙伴案例</h3><p>通过 API credits、实验室申请、Sanofi/Broad/10x/FutureHouse/Axiom 等案例，Anthropic 持续学习 Claude 能落在哪些科研环节。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-06-30</span>
+            <div><h3>Claude Science beta：独立科研工作台</h3><p>发布重点不是新模型，而是垂直工作台：60 多个 skills/connectors、本地/SSH/HPC 计算、可追溯 artifact、Reviewer agent 和生命科学可视化。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-07-15 / 07-31</span>
+            <div><h3>项目申请与资助通知：AI for Science projects</h3><p>官方将支持最多 50 个 Claude Science AI for Science 项目，提供最高 30,000 美元 credits；Modal 会为部分入选项目提供最高 2,000 美元 compute。申请开放至 2026 年 7 月 15 日，获奖通知会在 7 月 31 日前发出。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-09-01 - 12-01</span>
+            <div><h3>首批项目运行窗口</h3><p>入选项目将在 9 月到 12 月运行，这会成为观察真实实验室反馈、失败案例、复现质量和管理端部署阻力的关键窗口。</p></div>
+          </article>
+        </div>
+      </section>
+
+	      <section class="section" aria-labelledby="topics-title">
+	        <div class="section-head">
+	          <div>
+	            <h2 id="topics-title">讨论主题与来源证据</h2>
+	          </div>
+		          <p class="section-note">每个主题都保留核心判断、代表声音和来源入口，便于同时看结论与证据边界。</p>
+	        </div>
+	        <div class="topic-layout">
+	          <article class="trend-card" aria-labelledby="trend-title">
+	            <div class="trend-copy">
+	              <h3 id="trend-title">话题热度曲线</h3>
+	              <p>以 2026-06-30 到 2026-07-02 的公开讨论快照作为基线，观察科研诚信、workflow 产品化、HPC/数据不出域和中文上手门槛几类话题的相对热度。</p>
+	              <div class="trend-legend" aria-label="曲线图例">
+	                <span class="legend-dot" style="--dot:#2f7b57">科研诚信</span>
+	                <span class="legend-dot" style="--dot:#287d86">workflow 产品化</span>
+	                <span class="legend-dot" style="--dot:#d99236">HPC/数据不出域</span>
+	                <span class="legend-dot" style="--dot:#9b4d49">中文上手门槛</span>
+	              </div>
+	            </div>
+	            <svg class="trend-svg" viewBox="0 0 640 260" role="img" aria-label="Claude Science 话题热度趋势示意图">
+	              <rect x="0" y="0" width="640" height="260" rx="18" fill="#fbfcf8"></rect>
+	              <line x1="58" y1="34" x2="58" y2="206" stroke="#cbd7cc"></line>
+	              <line x1="58" y1="206" x2="590" y2="206" stroke="#cbd7cc"></line>
+	              <line x1="58" y1="148" x2="590" y2="148" stroke="#e2e8df" stroke-dasharray="6 8"></line>
+	              <line x1="58" y1="90" x2="590" y2="90" stroke="#e2e8df" stroke-dasharray="6 8"></line>
+	              <polyline points="86,82 338,48 562,58" fill="none" stroke="#2f7b57" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+	              <polyline points="86,68 338,60 562,74" fill="none" stroke="#287d86" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+	              <polyline points="86,138 338,102 562,106" fill="none" stroke="#d99236" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+	              <polyline points="86,182 338,120 562,110" fill="none" stroke="#9b4d49" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+	              <g fill="#2f7b57"><circle cx="86" cy="82" r="6"></circle><circle cx="338" cy="48" r="6"></circle><circle cx="562" cy="58" r="6"></circle></g>
+	              <g fill="#287d86"><circle cx="86" cy="68" r="6"></circle><circle cx="338" cy="60" r="6"></circle><circle cx="562" cy="74" r="6"></circle></g>
+	              <g fill="#d99236"><circle cx="86" cy="138" r="6"></circle><circle cx="338" cy="102" r="6"></circle><circle cx="562" cy="106" r="6"></circle></g>
+	              <g fill="#9b4d49"><circle cx="86" cy="182" r="6"></circle><circle cx="338" cy="120" r="6"></circle><circle cx="562" cy="110" r="6"></circle></g>
+	              <text class="trend-axis" x="36" y="40">高</text>
+	              <text class="trend-axis" x="36" y="210">低</text>
+	              <text class="trend-axis" x="60" y="234">06-30</text>
+	              <text class="trend-axis" x="312" y="234">07-01</text>
+	              <text class="trend-axis" x="536" y="234">07-02</text>
+	            </svg>
+	          </article>
+
+	          <div class="topic-grid">
+	            <article class="topic-card">
+	              <header>
+	                <h3>科研诚信与论文垃圾化</h3>
+	                <span class="topic-label is-risk">风险</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:92%"></span></div><span>高</span></div>
+	              <p>外网最集中的批评不是“不要 AI 工具”，而是担心论文生成变容易后，审稿和复现机制没有同步增强。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>HN 多位评论者把问题指向 peer review 激励和低质量产物堆积。</div>
+	              <div class="link-cluster">
+	                <a href="https://news.ycombinator.com/item?id=48735770" target="_blank" rel="noreferrer">HN 主帖</a>
+	                <a href="https://news.northeastern.edu/2026/06/30/anthropic-claude-science-launch/" target="_blank" rel="noreferrer">Northeastern</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>从比模型转向抢科研工作台入口</h3>
+	                <span class="topic-label">战略</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:86%"></span></div><span>高</span></div>
+	              <p>媒体和社区都更关注它是否能成为科研人员每天打开的 workflow，而不是一次单纯的模型能力发布。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>Reddit 把它类比成“Claude Code for research”，问题落在日常科研入口。</div>
+	              <div class="link-cluster">
+	                <a href="https://techcrunch.com/2026/06/30/anthropics-claude-science-bets-on-workflow-not-a-new-model-to-win-over-scientists/" target="_blank" rel="noreferrer">TechCrunch</a>
+	                <a href="https://thenewstack.io/anthropic-claude-science-workbench/" target="_blank" rel="noreferrer">The New Stack</a>
+	                <a href="https://www.reddit.com/search/?q=%22Claude%20Science%22&type=posts" target="_blank" rel="noreferrer">Reddit</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>HPC / TRE 与数据不出域</h3>
+	                <span class="topic-label is-good">产品</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:72%"></span></div><span>中高</span></div>
+	              <p>本地 server + 浏览器 UI 被认为比重桌面 app 更适合药企、医院和实验室这类环境，关键是数据能不能留在受控域内。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>HN 用户 gjuggler 从架构角度讨论了 TRE/HPC 环境里的部署价值。</div>
+	              <div class="link-cluster">
+	                <a href="https://news.ycombinator.com/item?id=48735770" target="_blank" rel="noreferrer">HN 主帖</a>
+	                <a href="https://thenewstack.io/anthropic-claude-science-workbench/" target="_blank" rel="noreferrer">The New Stack</a>
+	                <a href="https://claude.com/product/claude-science" target="_blank" rel="noreferrer">产品页</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>可追溯 artifact 与 Reviewer agent</h3>
+	                <span class="topic-label is-good">可信</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:78%"></span></div><span>中高</span></div>
+	              <p>代码、环境、对话历史、图表输出和 Reviewer agent 被看作最大差异点：它试图把“结果”变成可复盘的过程。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>HN 正向评论认可可验证记录；媒体也把 artifact 和 reviewer agent 作为产品机制重点。</div>
+	              <div class="link-cluster">
+	                <a href="https://www.anthropic.com/news/claude-science-ai-workbench" target="_blank" rel="noreferrer">Anthropic</a>
+	                <a href="https://thenewstack.io/anthropic-claude-science-workbench/" target="_blank" rel="noreferrer">The New Stack</a>
+	                <a href="https://news.ycombinator.com/item?id=48735770" target="_blank" rel="noreferrer">HN 主帖</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>中文上手门槛与教程需求</h3>
+	                <span class="topic-label is-warn">中文社区</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:68%"></span></div><span>中高</span></div>
+	              <p>小红书样本显示，中文用户很快从“发布了”转向“怎么装、能不能用、会不会被封、token 贵不贵”。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>教程、Windows/WSL 体验和轻量实测帖集中暴露账号、网络、服务器部署等现实问题。</div>
+	              <div class="link-cluster">
+	                <a href="https://www.xiaohongshu.com/search_result?keyword=Claude%20Science" target="_blank" rel="noreferrer">小红书搜索</a>
+	                <a href="https://mp.weixin.qq.com/s/3XA9Vs6Uo7Y_KYzVlekQvw" target="_blank" rel="noreferrer">我的AI栈</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>生命科学之外的覆盖边界</h3>
+	                <span class="topic-label is-warn">范围</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:58%"></span></div><span>中</span></div>
+	              <p>当前案例和 connector 明显偏生命科学，计算化学等相邻方向有讨论，但更广泛科研场景还缺真实复盘。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>HN 有用户指出非生物 connector 不足，短期更像 Life Sciences Workbench。</div>
+	              <div class="link-cluster">
+	                <a href="https://news.ycombinator.com/item?id=48735770" target="_blank" rel="noreferrer">HN 主帖</a>
+	                <a href="https://www.reddit.com/search/?q=%22Claude%20Science%22&type=posts" target="_blank" rel="noreferrer">Reddit</a>
+	                <a href="https://mp.weixin.qq.com/s/fUYdKLd9YtDnPXDgvUlqcg" target="_blank" rel="noreferrer">DeepTech</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>干湿闭环、本地化与机构落地</h3>
+	                <span class="topic-label is-warn">落地</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:64%"></span></div><span>中高</span></div>
+	              <p>中文深度解读更关心下一步能否从干实验工作台，走向实验设计、数据回流、复现实验和机构级部署。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>BIOTI 和 AI学术分享把它放进 AI4S 生产链，而不是单个助手产品来理解。</div>
+	              <div class="link-cluster">
+	                <a href="https://mp.weixin.qq.com/s/TQjxcRyJTAbNgDT63vkZyw" target="_blank" rel="noreferrer">BIOTI</a>
+	                <a href="https://mp.weixin.qq.com/s/ylJXS9wCAREyQRh-RAuZEA" target="_blank" rel="noreferrer">AI学术分享</a>
+	              </div>
+	            </article>
+
+	            <article class="topic-card">
+	              <header>
+	                <h3>竞争格局从模型路线走向产品路线</h3>
+	                <span class="topic-label">市场</span>
+	              </header>
+	              <div class="topic-heat"><span>热度</span><div class="mini-bar"><span style="width:56%"></span></div><span>中</span></div>
+	              <p>对比重点不是谁的模型更强，而是谁能进入科研流程：Claude Science 偏工作台，OpenAI/Google 偏模型与平台生态。</p>
+	              <div class="topic-voice"><strong>代表声音：</strong>中文媒体把它放到 Anthropic、OpenAI、Google 的科学 AI 产品路线里比较。</div>
+	              <div class="link-cluster">
+	                <a href="https://mp.weixin.qq.com/s/fUYdKLd9YtDnPXDgvUlqcg" target="_blank" rel="noreferrer">DeepTech</a>
+	                <a href="https://techcrunch.com/2026/06/30/anthropics-claude-science-bets-on-workflow-not-a-new-model-to-win-over-scientists/" target="_blank" rel="noreferrer">TechCrunch</a>
+	              </div>
+	            </article>
+	          </div>
+	        </div>
+	      </section>
+
+      <section class="section" aria-labelledby="timeline-title">
+        <div class="section-head">
+          <div>
+            <h2 id="timeline-title">传播路径</h2>
+          </div>
+          <p class="section-note">从官方发布到媒体解读，再到 HN 长讨论、中文媒体跟进和小红书上手样本，信息扩散速度很快；更细的产品和架构讨论仍集中在英文技术圈，中文侧更适合观察上手门槛。</p>
+        </div>
+        <div class="timeline">
+          <article class="timeline-item">
+            <span class="timeline-date">2026-06-30 17:00 UTC</span>
+            <div><h3>官方发布与英文科技媒体同步解读</h3><p>Anthropic、TechCrunch、The New Stack 等将关键词锁定在“不是新模型”“60+ 数据库”“可追溯 artifact”“HPC/SSH”。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-06-30 17:07 UTC</span>
+            <div><h3>HN 主帖快速成为核心讨论场</h3><p>主帖链接到 Claude 产品页，获得 452 points 和 134 条评论，是当前最有分析价值的社区反馈。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-06-30 夜间</span>
+            <div><h3>科学家采访与行业评论补足现实约束</h3><p>Northeastern 采访科学家，形成“期待很高、但药物研发和监管必须可验证”的中间立场。</p></div>
+          </article>
+          <article class="timeline-item">
+            <span class="timeline-date">2026-07-01</span>
+            <div><h3>中文侧从媒体跟进走到小红书上手样本</h3><p>中文网页、微博和公众号先做战略解读；随后小红书出现教程、轻量实测和评论区问题，开始暴露安装环境、账号认证、网络、Windows/服务器部署和使用边界等上手阻力。</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="actions-title">
+        <div class="section-head">
+          <div>
+            <h2 id="actions-title">观察建议</h2>
+          </div>
+          <p class="section-note">后续少做大而全判断，重点看科研工作台入口、connector 架构、真实复盘和落地风险。</p>
+        </div>
+        <div class="actions">
+          <article class="action">
+            <h3>把它作为“科研工作台入口”观察</h3>
+            <p>重点不在模型分数，而在 connector 质量、可追溯 artifact、数据不能离开实验室/药企时怎么部署，以及能否迁移到非生命科学场景。</p>
+          </article>
+          <article class="action">
+            <h3>单独跟踪 HN 主帖后续</h3>
+            <p>HN 已经出现真实试用、领域质疑和架构洞察，后续评论比普通新闻转载更值得跟。</p>
+          </article>
+          <article class="action">
+            <h3>把小红书作为中文上手门槛观察源</h3>
+            <p>重点看真实上手帖、评论区问题和失败反馈，不把夸张标题当事实判断。它能补 HN/Reddit 不擅长覆盖的中文用户问题：安装门槛、账号风险、国内网络环境和科研人是否真的愿意把 workflow 迁进去。</p>
+          </article>
+          <article class="action">
+            <h3>等真实实验室复盘再判断价值</h3>
+            <p>官方案例和早期媒体评价多为正向；真正需要补的是独立复现实验、失败案例、安全边界和管理员部署反馈。</p>
+          </article>
+          <article class="action">
+            <h3>建立竞品观察坐标</h3>
+            <p>对比重点不是谁更强，而是不同路线如何进入科研流程：Claude Science 偏工作台和 connector，OpenAI/Google 偏模型与平台生态，国内侧重点看数据、算力和机构落地条件。</p>
+          </article>
+          <article class="action">
+            <h3>拆 MCP 与 connector 架构</h3>
+            <p>60+ skills/connectors 的价值不只是数量，而是把模型、数据库、科研软件、HPC 和可视化 artifact 接成一个可复用的科研连接层。</p>
+          </article>
+          <article class="action">
+            <h3>沉淀平台设计启示</h3>
+            <p>Reviewer agent、代码/环境/对话历史绑定、领域 connector 规划，值得变成后续设计科研 Agent 平台时的检查清单。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="sources-title">
+        <div class="section-head">
+          <div>
+            <h2 id="sources-title">来源</h2>
+          </div>
+          <p class="section-note">来源以公开可访问链接为主；小红书部分来自登录后搜索样本，临时链接不作为长期来源。内容按“事实/观点/社区反馈”分层处理。</p>
+        </div>
+        <div class="source-table">
+	          <div class="source-row"><strong>Anthropic</strong><span>官方发布：产品定位、功能、beta 范围、科研项目信用额度。</span><a href="https://www.anthropic.com/news/claude-science-ai-workbench" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>Life Sciences</strong><span>2025 年生命科学布局：connector、Agent Skills、prompt library 和专属支持。</span><a href="https://www.anthropic.com/news/claude-for-life-sciences" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>Claude 产品页</strong><span>产品展示、用例、客户/研究者 testimonial 和视觉素材。</span><a href="https://claude.com/product/claude-science" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>Claude Docs</strong><span>官方文档与 Getting Started：安装、连接器、远程计算、权限和故障排查。</span><a href="https://claude.com/docs/claude-science/overview" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>Hacker News</strong><span>主社区讨论：452 points，134 comments，聚焦科研诚信、HPC、使用边界。</span><a href="https://news.ycombinator.com/item?id=48735770" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>Reddit</strong><span>公开平台内搜索：r/singularity、r/comp_chem、r/ClaudeAI 等子版块的讨论线索。</span><a href="https://www.reddit.com/search/?q=%22Claude%20Science%22&amp;type=posts" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>小红书</strong><span>登录后关键词搜索样本：教程、操作实例、Windows/WSL、深度解读和评论区问题，主要用来看中文上手门槛。</span><a href="https://www.xiaohongshu.com/search_result?keyword=Claude%20Science" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>B站</strong><span>中文视频样本：功能速览、首发实测、蛋白质结构可视化和 AI 科研新闻解读。</span><a href="https://search.bilibili.com/all?keyword=Claude%20Science" target="_blank" rel="noreferrer">打开</a></div>
+	          <div class="source-row"><strong>TechCrunch</strong><span>将发布解读为工作流产品战略，而不是新模型发布。</span><a href="https://techcrunch.com/2026/06/30/anthropics-claude-science-bets-on-workflow-not-a-new-model-to-win-over-scientists/" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>Northeastern</strong><span>采访科学家，给出“期待但需验证”的科研用户视角。</span><a href="https://news.northeastern.edu/2026/06/30/anthropic-claude-science-launch/" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>The New Stack</strong><span>产品机制拆解：工具、数据库、MCP、SSH/HPC、图表 artifact。</span><a href="https://thenewstack.io/anthropic-claude-science-workbench/" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>BIOTI</strong><span>公众号深度解读：把 Claude Science 放到 AI4S 工作台、connectors/skills/Reviewer agent、干湿闭环和国内本地化场景中理解。</span><a href="https://mp.weixin.qq.com/s/TQjxcRyJTAbNgDT63vkZyw" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>AI学术分享</strong><span>观点性评论：强调 AI4S 竞争从模型、论文和 demo 转向科研生产链、真实流程、数据闭环和科研信用。</span><a href="https://mp.weixin.qq.com/s/ylJXS9wCAREyQRh-RAuZEA" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>DeepTech</strong><span>中文科技媒体跟进：补充 Anthropic、OpenAI、Google 在科学 AI 市场上的不同产品路线比较。</span><a href="https://mp.weixin.qq.com/s/fUYdKLd9YtDnPXDgvUlqcg" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>我的AI栈</strong><span>公众号快速跟进：补充中文侧对“AI 科研工作台”和 Anthropic 行业解决方案路线的传播样本。</span><a href="https://mp.weixin.qq.com/s/3XA9Vs6Uo7Y_KYzVlekQvw" target="_blank" rel="noreferrer">打开</a></div>
+          <div class="source-row"><strong>中文公开报道</strong><span>中文侧以媒体跟进和战略解读为主，包括 Winzheng、LavX、Sina/微博转载。</span><a href="https://www.winzheng.com/article/anthropic-claude-science-workflow-research" target="_blank" rel="noreferrer">打开</a></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="lightbox" id="shot-lightbox" aria-hidden="true">
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+      <div class="lightbox-head">
+        <p class="lightbox-title" id="lightbox-title">功能截图</p>
+        <button class="lightbox-close" type="button" aria-label="关闭截图预览">×</button>
+      </div>
+      <div class="lightbox-scroll">
+        <aside class="lightbox-summary" id="lightbox-summary"></aside>
+        <div class="lightbox-stack" id="lightbox-stack"></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const lightbox = document.getElementById("shot-lightbox");
+    const lightboxTitle = document.getElementById("lightbox-title");
+    const lightboxSummary = document.getElementById("lightbox-summary");
+    const lightboxStack = document.getElementById("lightbox-stack");
+    const closeButton = lightbox?.querySelector(".lightbox-close");
+    const shotGroups = {
+      scienceFlow: {
+        title: "Claude Science 工作流截图：从任务到 artifact",
+        intro: "这组截图从官方文档能力说明开始，依次呈现任务执行、远程计算、Review、artifact 输出，以及中文侧教程和实测来源。",
+        bullets: [
+          "主线是从研究任务进入工作台，再沉淀为可复盘 artifact。",
+          "官方截图覆盖任务输入、远程计算、Notebook、Reviewer、Code/Logs/Review 标签和 artifact 输出。",
+          "中文来源补充上手门槛、视频实测和评论区问题。"
+        ],
+        links: [
+          ["官方产品页", "https://claude.com/product/claude-science"],
+          ["官方发布", "https://www.anthropic.com/news/claude-science-ai-workbench"],
+          ["Docs", "https://claude.com/docs/claude-science/overview"],
+          ["小红书搜索", "https://www.xiaohongshu.com/search_result?keyword=Claude%20Science"],
+          ["B站搜索", "https://search.bilibili.com/all?keyword=Claude%20Science"]
+        ],
+        images: [
+          {
+            src: "assets/claude-science-docs.png",
+            title: "概念层：官方文档中的能力说明",
+            body: "Docs 用来确认 Project、Session、Artifact、Provenance、Sandbox、Permission Card、Reviewer 等概念边界。"
+          },
+          {
+            src: "assets/science-pillars-domain.webp",
+            title: "任务输入、执行进度、Reviewer 与 PDF",
+            body: "中间是文献综述任务和多路检索进度，Reviewer finding 直接指出 PMID 冲突，右侧同步显示生成的 review.pdf。"
+          },
+          {
+            src: "assets/science-pillars-compute.webp",
+            title: "远程任务队列与 live notebook",
+            body: "中间是 scVI 超参数表和 remote job 队列，右侧是共享给 agent 的 Python notebook 与 live kernel 输出。"
+          },
+          {
+            src: "assets/science-pillars-artifacts.webp",
+            title: "artifact 面板、代码和 Review 标签",
+            body: "中间是带版本的图表 artifact；右侧能看到 Code、Execution Log、Messages、Environment、Review 和 Download script。"
+          },
+          {
+            src: "assets/usecase-single-cell.webp",
+            title: "单细胞 UMAP 与 marker dot plot",
+            body: "Tabula Sapiens 的 UMAP 聚类、器官标签和 cell-type markers dot plot，展示图表类 artifact 的样子。"
+          },
+          {
+            src: "assets/usecase-protein.webp",
+            title: "蛋白 3D 结构与变异信息面板",
+            body: "KRAS 3D ribbon 占据主视图，右侧是 pLDDT、Pfam domain、pathogenic variants 和结构来源。"
+          },
+          {
+            src: "assets/usecase-cheminformatics.webp",
+            title: "Ketcher 化学结构编辑器",
+            body: "KRAS inhibitor 分子结构、左侧编辑工具、右侧元素栏、版本号和保存入口，展示化学编辑类 artifact。"
+          },
+          {
+            src: "assets/bilibili-protein-demo.jpg",
+            title: "中文实测：5分钟蛋白质结构可视化",
+            body: "B站实测用来补充中文侧如何演示功能，尤其是蛋白结构可视化这种容易被视频化的任务。",
+            linkLabel: "打开 B站实测",
+            linkUrl: "https://www.bilibili.com/video/BV1XCTY6qEsa"
+          },
+          {
+            src: "assets/bilibili-overview.jpg",
+            title: "中文速览：科学渲染器、本地内核与 HPC",
+            body: "B站速览把科学渲染器、Python/R 持续内核、本地或 GPU/HPC 集群和生命科学可视化串成中文解释。",
+            linkLabel: "打开 B站速览",
+            linkUrl: "https://www.bilibili.com/video/BV1CnTh6yEzd"
+          }
+        ]
+      },
+      workspace: {
+        title: "工作台界面：任务、代码、Review 怎么并排",
+        intro: "这一组看 Claude Science 的主工作台形态：左侧项目/文件，中间任务和 artifact，右侧代码、日志、环境和 Review。",
+        bullets: [
+          "任务输入后会展开检索、调度、Reviewer finding 和 PDF 预览。",
+          "远程任务可以显示队列、耗时和 live notebook kernel。",
+          "artifact 面板能切到 Code、Execution Log、Messages、Environment、Review。"
+        ],
+        links: [
+          ["官方产品页", "https://claude.com/product/claude-science"],
+          ["官方发布", "https://www.anthropic.com/news/claude-science-ai-workbench"],
+          ["Docs", "https://claude.com/docs/claude-science/overview"]
+        ],
+        images: [
+          {
+            src: "assets/science-pillars-domain.webp",
+            title: "任务输入、执行进度、Reviewer 与 PDF",
+            body: "中间是文献综述任务和多路检索进度，Reviewer finding 直接指出 PMID 冲突，右侧同步显示生成的 review.pdf。"
+          },
+          {
+            src: "assets/science-pillars-compute.webp",
+            title: "远程任务队列与 live notebook",
+            body: "中间是 scVI 超参数表和 remote job 队列，右侧是共享给 agent 的 Python notebook 与 live kernel 输出。"
+          },
+          {
+            src: "assets/science-pillars-artifacts.webp",
+            title: "artifact 面板、代码和 Review 标签",
+            body: "中间是带版本的图表 artifact；右侧能看到 Code、Execution Log、Messages、Environment、Review 和 Download script。"
+          }
+        ]
+      },
+      artifacts: {
+        title: "科研 artifact：图表、结构、化学编辑器长什么样",
+        intro: "这一组看 Claude Science 最终产出的可视化 artifact，而不是再解释科学任务本身。",
+        bullets: [
+          "单细胞输出是 UMAP + marker dot plot 的组合。",
+          "蛋白结构输出带 3D ribbon、置信度、domain 和变异列表。",
+          "化学方向直接打开 Ketcher 结构编辑器。"
+        ],
+        links: [["官方产品页", "https://claude.com/product/claude-science"]],
+        images: [
+          {
+            src: "assets/usecase-single-cell.webp",
+            title: "单细胞 UMAP 与 marker dot plot",
+            body: "画面里是 Tabula Sapiens 的 UMAP 聚类、器官标签和 cell-type markers dot plot，右上角保留 artifact 操作入口。"
+          },
+          {
+            src: "assets/usecase-protein.webp",
+            title: "蛋白 3D 结构与变异信息面板",
+            body: "KRAS 3D ribbon 占据主视图，右侧是 pLDDT、Pfam domain、pathogenic variants 和结构来源。"
+          },
+          {
+            src: "assets/usecase-cheminformatics.webp",
+            title: "Ketcher 化学结构编辑器",
+            body: "画面展示 KRAS inhibitor 分子结构、左侧编辑工具、右侧元素栏、版本号和保存入口。"
+          }
+        ]
+      },
+      community: {
+        title: "中文教程与实测来源",
+        intro: "这一组保留小红书和 B站来源。它们不等同于官方功能截图，但能说明中文用户怎么上手、怎么演示、哪里卡住。",
+        bullets: [
+          "小红书更适合看安装门槛、账号/网络问题和 Windows/WSL2 变通。",
+          "已抽到的评论集中在：封号/令牌、能否接 API、Linux/WSL 怎么用、是否只能用 Claude 自家模型。",
+          "B站更适合看功能演示，尤其是蛋白结构可视化和本地/HPC 概念速览。",
+          "小红书图片不作为公开素材搬运，仅保留来源、评论信号和上手门槛判断。"
+        ],
+        links: [
+          ["小红书教程搜索", "https://www.xiaohongshu.com/search_result?keyword=Claude%20Science%20%E6%95%99%E7%A8%8B"],
+          ["小红书 WSL 搜索", "https://www.xiaohongshu.com/search_result?keyword=Claude%20Science%20WSL"],
+          ["B站实测", "https://www.bilibili.com/video/BV1XCTY6qEsa"],
+          ["B站速览", "https://www.bilibili.com/video/BV1CnTh6yEzd"]
+        ],
+        images: [
+          {
+            src: "assets/bilibili-protein-demo.jpg",
+            title: "B站实测：5分钟蛋白质结构可视化",
+            body: "星小脉视频从零上手，演示拉取并可视化蛋白结构，适合作为中文侧功能演示样本。"
+          },
+          {
+            src: "assets/bilibili-overview.jpg",
+            title: "B站速览：科学渲染器、本地内核与 HPC",
+            body: "旭光升视频把科学渲染器、Python/R 持续内核、本地或 GPU/HPC 集群和生命科学可视化串成速览。"
+          }
+        ]
+      }
+    };
+
+    function renderLinks(links) {
+      return links.map(([label, href]) => `<a href="${href}" target="_blank" rel="noreferrer">${label}</a>`).join("");
+    }
+
+    function closeLightbox() {
+      if (!lightbox || !lightboxSummary || !lightboxStack) return;
+      lightbox.classList.remove("is-open");
+      lightbox.setAttribute("aria-hidden", "true");
+      lightboxSummary.innerHTML = "";
+      lightboxStack.innerHTML = "";
+      document.body.style.overflow = "";
+    }
+
+    document.querySelectorAll(".shot-expand").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!lightbox || !lightboxTitle || !lightboxSummary || !lightboxStack) return;
+        const group = shotGroups[button.dataset.gallery];
+        if (!group) return;
+        lightboxTitle.textContent = group.title;
+        lightboxSummary.innerHTML = `
+          <h3>${group.title}</h3>
+          <p>${group.intro}</p>
+          <ul>${group.bullets.map((item) => `<li>${item}</li>`).join("")}</ul>
+          <div class="modal-links">${renderLinks(group.links)}</div>
+        `;
+        lightboxStack.innerHTML = group.images.map((image, index) => `
+          <figure class="lightbox-shot${image.linkUrl ? " is-clickable" : ""}"${image.linkUrl ? ` data-link-url="${image.linkUrl}" tabindex="0" role="link"` : ""}>
+            <img src="${image.src}" alt="${image.title}" loading="lazy">
+            <figcaption>
+              <h4>${index + 1}. ${image.title}</h4>
+              <p>${image.body}</p>
+              ${image.linkUrl ? `<div class="modal-links"><a href="${image.linkUrl}" target="_blank" rel="noreferrer">${image.linkLabel || "打开来源"}</a></div>` : ""}
+            </figcaption>
+          </figure>
+        `).join("");
+        lightboxStack.querySelectorAll(".lightbox-shot[data-link-url]").forEach((card) => {
+          const openCardLink = () => window.open(card.dataset.linkUrl, "_blank", "noopener");
+          card.addEventListener("click", (event) => {
+            if (event.target.closest("a, button")) return;
+            openCardLink();
+          });
+          card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              openCardLink();
+            }
+          });
+        });
+        lightbox.classList.add("is-open");
+        lightbox.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        lightbox.querySelector(".lightbox-scroll")?.scrollTo({ top: 0 });
+      });
+    });
+
+    document.querySelectorAll(".feature-card.is-group, .workflow-shot-card").forEach((card) => {
+      card.tabIndex = 0;
+      card.addEventListener("click", (event) => {
+        if (event.target.closest("a, button")) return;
+        card.querySelector(".shot-expand")?.click();
+      });
+      card.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          card.querySelector(".shot-expand")?.click();
+        }
+      });
+    });
+
+    closeButton?.addEventListener("click", closeLightbox);
+    lightbox?.addEventListener("click", (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && lightbox?.classList.contains("is-open")) {
+        closeLightbox();
+      }
+    });
+  </script>
+</body>
+</html>
